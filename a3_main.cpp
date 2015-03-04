@@ -146,8 +146,8 @@ int main() {
     //testBoxBlur();
     //testShiftedImpulse();
     //testGradient();
-    testGaussianFilters();
-    //testSharpen();
+    //testGaussianFilters();
+    testSharpen();
     //testBilaterial();
 
 }

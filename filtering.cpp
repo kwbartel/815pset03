@@ -157,7 +157,11 @@ Image gaussianBlur_seperable(const Image &im, float sigma, float truncate, bool 
 // PS03 - 2.5.1 - sharpen an image
 Image unsharpMask(const Image &im, float sigma, float truncate, float strength, bool clamp){
 
-    return Image(0); // change this
+    Image lowpass = gaussianBlur_seperable( im, sigma, truncate, clamp );
+    Image highpass = im - lowpass;
+    //Image output( im.width(), im.height(), im.channels() );
+    //for (i = 0; i < strength; i++)
+    return im + strength * highpass;
     
 }
 
