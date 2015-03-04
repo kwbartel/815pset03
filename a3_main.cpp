@@ -92,14 +92,14 @@ void testGaussianFilters() {
     Image blurHorizontal = gaussianBlur_horizontal(im, sigma);
     blurHorizontal.write("./Output/gaussBlurHorizontal.png");
     
-  /*  // blur an image in 2D using a full 2D kernel
+    // blur an image in 2D using a full 2D kernel
     tstart = time(0);
     Image blur2D = gaussianBlur_2D(im, sigma);
     // print the time it takes to run this function
     printf("Filtering with 2D Gaussian kernel took %3.2f seconds\n", difftime(time(0), tstart));
     blur2D.write("./Output/gaussBlur2D.png");
 
-    // blur an image in 2D using 2 1D Gaussian kernels
+    /*// blur an image in 2D using 2 1D Gaussian kernels
     tstart = time(0);
     Image blur2DSeperable = gaussianBlur_seperable(im, sigma);
     // print the time it takes to run this function
@@ -108,7 +108,7 @@ void testGaussianFilters() {
     
     // verify that both methods result in the same image
     Image diffImg = (blur2D - blur2DSeperable)/2 + 0.5;
-    diffImg.write("./Output/gaussBlurDiff.png"); */
+    diffImg.write("./Output/gaussBlurDiff.png");*/
 
 }
 

@@ -73,7 +73,7 @@ Image gradientMagnitude(const Image &im, bool clamp){
 
 // PS03 - 2.4.1 - create a vector containing the normalized values in a 1D Gaussian filter
 vector<float> gauss1DFilterValues(float sigma, float truncate){
-    // push back pow(e,exponent) for 1 + 2 * ceil(sigma * truncate) times
+    
     // -1/(2 sigma**2)
     float factor = -1 / (2 * pow(sigma, 2));
     float length = 1 + 2 * (ceil(sigma * truncate));
@@ -91,7 +91,6 @@ vector<float> gauss1DFilterValues(float sigma, float truncate){
     for (int i = 0; i < values.size(); i++)
         values[i] /= accum;
     
-    
     return values;
 }
 
@@ -101,19 +100,45 @@ Image gaussianBlur_horizontal(const Image &im, float sigma, float truncate, bool
     vector<float> gaussianValues = gauss1DFilterValues( sigma, truncate );
     Filter gaussianFilter( gaussianValues, gaussianValues.size(), 1 );
     return gaussianFilter.Convolve( im, clamp );
+    
 }
 
 // PS03 - 2.4.3 - create a vector containing the normalized values in a 2D Gaussian filter
 vector<float> gauss2DFilterValues(float sigma, float truncate){
     
-    return vector<float>(); // change this
+    // push back pow(e,exponent) for 1 + 2 * ceil(sigma * truncate) times
+    // -1/(2 sigma**2)
+    float factor = -1 / (2 * pow(sigma, 2));
+    float length = 1 + 2 * (ceil(sigma * truncate));
+    vector<float> values;
+    
+    // Calculate nonnormalized Gaussian values
+    float accum = 0;
+    for (int x = -ceil(sigma * truncate); x <= ceil(sigma * truncate); x++) {
+        for (int y = -ceil(sigma * truncate); y <= ceil(sigma * truncate); y++) {
+            float r = sqrt(pow(x, 2) + pow(y, 2));
+            float v = pow(2.718281828, r*r * factor);
+            values.push_back(v);
+            accum += v;
+        }
+    }
+    
+    // Normalize
+    for (int i = 0; i < values.size(); i++)
+        values[i] /= accum;
+    
+    return values;
 }
 
 
 // PS03 - 2.4.4 - Blur an image with a full  full 2D rotationally symmetric Gaussian kernel
 Image gaussianBlur_2D(const Image &im, float sigma, float truncate, bool clamp){
     
-    return Image(0); // change this
+    vector<float> gaussianValues = gauss2DFilterValues(sigma, truncate);
+    float length = 1 + 2 * (ceil(sigma * truncate));
+    Filter gaussianFilter2D( gaussianValues, length, length );
+    return gaussianFilter2D.Convolve( im, clamp );
+    
 }
 
 // PS03 - 2.4.5 - Use principles of seperabiltity to blur an image using 2 1D Gaussian Filters
