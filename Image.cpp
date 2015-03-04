@@ -9,7 +9,16 @@ using namespace std;
 // PS02 - 2.0.1: Safe Accessor that will return a black pixel (clamp = false) or the
 // nearest pixel value (clamp = true) when indexing out of the bounds of the image
 float Image::smartAccessor(int x, int y, int z, bool clamp) const{
-    return 0; // change this
+    if (clamp) {
+        int cx = min(max(0, x), width() - 1);
+        int cy = min(max(0, y), height() - 1);
+        int cz = min(max(0, z), channels() - 1);
+        return operator()(cx, cy, cz);
+    } else {
+        bool outOfBounds = (x < 0 || y < 0 || x >= width() || y >= height() || z < 0 || z >= channels());
+        return outOfBounds ? 0.0 : operator()(x, y, z);
+    }
+    
 }
 
 

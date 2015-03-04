@@ -142,9 +142,8 @@ void testBilaterial() {
 // This is a way for you to test your functions.
 // We will not grade the contents of the main function
 int main() {
-    
     // uncomment these test functions as you complete the assignment
-    //testBoxBlur();
+    testBoxBlur();
     //testShiftedImpulse();
     //testGradient();
     //testGaussianFilters();

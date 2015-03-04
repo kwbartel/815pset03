@@ -14,16 +14,37 @@ using namespace std;
 
 // PS03 - 2.1.1 - convolve an image with a box filter of size k by k
 Image boxBlur(const Image &im, const int &k, bool clamp) {
+    Image output(im.width(), im.height(), im.channels());
+    for (int x = 0; x < output.width(); x++) {
+        for (int y = 0; y < output.height(); y++) {
+            for (int z = 0; z < output.channels(); z++) {
+                float accum = 0;
+                for (int a = -((k-1)/2); a <= (k-1)/2; a++) {
+                    for (int b = -((k-1)/2); b <= (k-1)/2; b++) {
+                        accum += im.smartAccessor(x + a, y + b, z, clamp);
+                    }
+                }
+                output(x, y, z) = accum/(k*k);
+            }
+        }
+    }
     
-    return Image(0); // change this
+    return output; // change this
 }
 
 
 // PS03 - 2.2.2 - reimeplement the box filter using the filter class.
 // check that your results math those in the previous function "boxBlur"
 Image boxBlur_filterClass(const Image &im, const int &k, bool clamp) {
-  
-    return Image(0); // change this
+    // Create the filter
+    vector<float> boxData;
+    float factor = 1.0/(k*k);
+
+    for (int x = 0; x < k*k; x++)
+        boxData.push_back(factor);
+    
+    Filter boxFilter(boxData, k, k);
+    return boxFilter.Convolve(im, clamp);
 }
 
 
@@ -97,8 +118,23 @@ Image bilaYUV(const Image &im, float sigmaRange, float sigmaY, float sigmaUV, fl
 
 // PS03 - 2.2.1 - write a convolution function for the filter class
 Image Filter::Convolve(const Image &im, bool clamp){
-    
-    return Image(0); // change this
+    Image output(im.width(), im.height(), im.channels());
+    for (int x = 0; x < output.width(); x++) {
+        for (int y = 0; y < output.height(); y++) {
+            for (int z = 0; z < output.channels(); z++) {
+                float accum = 0;
+                for (int a = ((width-1)/2); a >= -(width-1)/2; a--) {
+                    for (int b = -((height-1)/2); b <= (height-1)/2; b++) {
+                        int filter_x = a + (width-1)/2;
+                        int filter_y = b + (height-1)/2;
+                        accum += operator()(filter_x, filter_y) * im.smartAccessor(x + a, y + b, z, clamp);
+                    }
+                }
+                output(x, y, z) = accum;
+            }
+        }
+    }
+    return output;
 }
 
 
