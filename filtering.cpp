@@ -144,7 +144,13 @@ Image gaussianBlur_2D(const Image &im, float sigma, float truncate, bool clamp){
 // PS03 - 2.4.5 - Use principles of seperabiltity to blur an image using 2 1D Gaussian Filters
 Image gaussianBlur_seperable(const Image &im, float sigma, float truncate, bool clamp){
     
-    return Image(0); // change this
+    vector<float> gaussValues = gauss1DFilterValues( sigma, truncate );
+    Filter gaussHorizontal( gaussValues, gaussValues.size(), 1 );
+    Filter gaussVertical( gaussValues, 1, gaussValues.size() );
+    
+    Image output = gaussHorizontal.Convolve( im, clamp );
+    output = gaussVertical.Convolve( output, clamp );
+    return output;
 }
 
 
