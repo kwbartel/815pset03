@@ -143,9 +143,9 @@ void testBilaterial() {
 // We will not grade the contents of the main function
 int main() {
     // uncomment these test functions as you complete the assignment
-    testBoxBlur();
+    //testBoxBlur();
     //testShiftedImpulse();
-    //testGradient();
+    testGradient();
     //testGaussianFilters();
     //testSharpen();
     //testBilaterial();

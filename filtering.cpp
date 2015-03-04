@@ -52,8 +52,23 @@ Image boxBlur_filterClass(const Image &im, const int &k, bool clamp) {
 // components of the gradient of an image and returns the gradient magnitude.
 Image gradientMagnitude(const Image &im, bool clamp){
     
-    return Image(0); // change this
+    float fDataXArray[] = { -1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0 };
+    vector<float> fDataX (fDataXArray, fDataXArray + sizeof(fDataXArray) / sizeof(float) );
+    Filter sobelX(fDataX, 3, 3);
     
+    float fDataYArray[] = { -1.0, -2.0, -1.0, 0.0, 0.0, 0.0, 1.0, 2.0, 1.0 };
+    vector<float> fDataY (fDataYArray, fDataYArray + sizeof(fDataYArray) / sizeof(float) );
+    Filter sobelY(fDataY, 3, 3);
+    
+    Image horizontalGradient = sobelX.Convolve(im);
+    Image verticalGradient = sobelY.Convolve(im);
+    Image output(im.width(), im.height(), im.channels());
+    
+    for (int x = 0; x < im.width(); x++)
+        for (int y = 0; y < im.height(); y++)
+            for (int z = 0; z < im.channels(); z++)
+                output(x, y, z) = sqrt(pow(horizontalGradient(x, y, z), 2) + pow(verticalGradient(x, y, z), 2));
+    return output;
 }
 
 // PS03 - 2.4.1 - create a vector containing the normalized values in a 1D Gaussian filter
