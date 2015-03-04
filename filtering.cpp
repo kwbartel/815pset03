@@ -73,14 +73,34 @@ Image gradientMagnitude(const Image &im, bool clamp){
 
 // PS03 - 2.4.1 - create a vector containing the normalized values in a 1D Gaussian filter
 vector<float> gauss1DFilterValues(float sigma, float truncate){
+    // push back pow(e,exponent) for 1 + 2 * ceil(sigma * truncate) times
+    // -1/(2 sigma**2)
+    float factor = -1 / (2 * pow(sigma, 2));
+    float length = 1 + 2 * (ceil(sigma * truncate));
+    vector<float> values;
     
-    return vector<float>(); // change this
+    // Calculate nonnormalized Gaussian values
+    float accum = 0;
+    for (int r = -ceil(sigma * truncate); r <= ceil(sigma * truncate); r++) {
+        float v = pow(2.718281828, r*r * factor);
+        values.push_back(v);
+        accum += v;
+    }
+    
+    // Normalize
+    for (int i = 0; i < values.size(); i++)
+        values[i] /= accum;
+    
+    
+    return values;
 }
 
 // PS03 - 2.4.2 - blur across the rows of an image
 Image gaussianBlur_horizontal(const Image &im, float sigma, float truncate, bool clamp){
     
-    return Image(0); // change this
+    vector<float> gaussianValues = gauss1DFilterValues( sigma, truncate );
+    Filter gaussianFilter( gaussianValues, gaussianValues.size(), 1 );
+    return gaussianFilter.Convolve( im, clamp );
 }
 
 // PS03 - 2.4.3 - create a vector containing the normalized values in a 2D Gaussian filter

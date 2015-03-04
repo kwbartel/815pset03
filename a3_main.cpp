@@ -92,7 +92,7 @@ void testGaussianFilters() {
     Image blurHorizontal = gaussianBlur_horizontal(im, sigma);
     blurHorizontal.write("./Output/gaussBlurHorizontal.png");
     
-    // blur an image in 2D using a full 2D kernel
+  /*  // blur an image in 2D using a full 2D kernel
     tstart = time(0);
     Image blur2D = gaussianBlur_2D(im, sigma);
     // print the time it takes to run this function
@@ -108,7 +108,7 @@ void testGaussianFilters() {
     
     // verify that both methods result in the same image
     Image diffImg = (blur2D - blur2DSeperable)/2 + 0.5;
-    diffImg.write("./Output/gaussBlurDiff.png");
+    diffImg.write("./Output/gaussBlurDiff.png"); */
 
 }
 
@@ -145,8 +145,8 @@ int main() {
     // uncomment these test functions as you complete the assignment
     //testBoxBlur();
     //testShiftedImpulse();
-    testGradient();
-    //testGaussianFilters();
+    //testGradient();
+    testGaussianFilters();
     //testSharpen();
     //testBilaterial();
 
