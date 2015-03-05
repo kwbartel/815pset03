@@ -126,10 +126,25 @@ void testSharpen() {
 void testBilaterial() {
     
     Image im("./Input/lens.png");
+    //Image im("./Input/lens.png");
     
     // Perform bilaterial filtering on an RGB image
     Image rgbBilatIm = bilateral(im);
     rgbBilatIm.write("./Output/bilaterial_RGB.png");
+    
+    Image rodrigoIm("./Output/bilaterial_RGB_rodrigo.png");
+    
+    for (int x = 0; x < rgbBilatIm.width(); x++) {
+        for (int y = 0; y < rgbBilatIm.height(); y++) {
+            for (int z = 0; z < rgbBilatIm.channels(); z++) {
+                if (rodrigoIm(x, y, z) != rgbBilatIm(x, y, z))
+                    cout << rodrigoIm(x, y, z) - rgbBilatIm(x, y, z) << endl;
+            }
+        }
+    }
+    
+    Image diffImg = (rodrigoIm - im)/2 + 0.5;
+    diffImg.write("./Output/bilateral_diff.png");
     
     // NOTE: Uncomment the code below if you have implemented bilaYUV
     // Perform bilaterial filtering with different domain sigmas for Y and UV
@@ -147,7 +162,7 @@ int main() {
     //testShiftedImpulse();
     //testGradient();
     //testGaussianFilters();
-    testSharpen();
-    //testBilaterial();
+    //testSharpen();
+    testBilaterial();
 
 }

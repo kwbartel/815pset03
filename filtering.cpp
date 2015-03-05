@@ -82,7 +82,7 @@ vector<float> gauss1DFilterValues(float sigma, float truncate){
     // Calculate nonnormalized Gaussian values
     float accum = 0;
     for (int r = -ceil(sigma * truncate); r <= ceil(sigma * truncate); r++) {
-        float v = pow(2.718281828, r*r * factor);
+        float v = exp(r*r * factor);
         values.push_back(v);
         accum += v;
     }
@@ -169,7 +169,67 @@ Image unsharpMask(const Image &im, float sigma, float truncate, float strength, 
 // PS03 - 3.0.1 -  Denoise an image using bilateral filtering
 Image bilateral(const Image &im, float sigmaRange, float sigmaDomain, float truncateDomain, bool clamp){
     
-    return Image(0); // change this
+    // Precompute spatial weight f (domain gaussian)
+    vector<float> domainGaussianValues = gauss2DFilterValues( sigmaDomain, truncateDomain );
+    float radius = ceil( sigmaDomain * truncateDomain );
+    float length = 1 + 2 * radius;
+    float range_weight_factor = -1.0/(2*sigmaRange * sigmaRange);
+    
+    
+    Filter domainGaussianFilter( domainGaussianValues , length, length ) ;
+    
+    Image output( im.width(), im.height(), im.channels() );
+    
+    // For each output pixel
+    for ( int x = 0; x < output.width(); x++ ) {
+        for ( int y = 0; y < output.height(); y++ ) {
+                
+            // Set sums to 0
+            float k_sum = 0;
+            
+            // For each neighborhood pixel
+            for (int a = -radius; a <= radius; a++) {
+                // Should b go from + to -?
+                for (int b = -radius; b <= radius; b++) {
+                    float range_weight = 0;
+                    float gauss = 0;
+                    
+                    for (int c = 0; c < output.channels(); c++) {
+                        // Dummy pixel
+                        int x_prime = x + a;
+                        int y_prime = y + b;
+                        
+                        // Compute color distance
+                        float color_distance = 0;
+                        for (int z = 0; z < im.channels(); z++)
+                            color_distance += pow(im.smartAccessor(x, y, z, clamp) - im.smartAccessor(x_prime, y_prime, z, clamp), 2);
+                        
+                        // Compute range weight
+                        //float range_weight = exp(range_weight_factor * color_distance);
+                        range_weight = exp(-color_distance/(2*sigmaRange*sigmaRange));
+                        gauss = exp(-(a*a+b*b) / (2 * sigmaDomain * sigmaDomain));
+                        
+                        output(x, y, c) += range_weight * gauss * im.smartAccessor(x_prime, y_prime, c, clamp);
+
+                        //k_sum += range_weight * domainGaussianFilter(a + radius, b + radius);
+                        //output(x, y, c) += range_weight * domainGaussianFilter(a + radius, b + radius) * im.smartAccessor(x_prime, y_prime, c, clamp);
+                    }
+                    k_sum += range_weight * gauss;
+                }
+                // After summing over all neighbors, set output pixel value
+                /*cout << "------" << endl;
+                cout << bilateral_sum << endl;
+                cout << k_sum << endl;
+                cout << bilateral_sum / k_sum - im(x, y, c) << endl;*/
+            }
+            for (int c = 0; c < output.channels(); c++) {
+                output(x, y, c) = output(x, y, c) / k_sum;
+            }
+        }
+    }
+    
+    return output;
+    
 }
 
 
